@@ -13,7 +13,7 @@
 ; If you have any fixes/enhancements, please send
 ;  them to the maintainer: Alvin Shih.
 ;
-; Version 0.03.  2007-02-14
+; Version 0.04.  2007-03-09
 ;
 ; Just add something resembling the following to your .emacs:
 ;   (setq load-path (cons "PATH/TO/site-lisp" load-path))
@@ -21,6 +21,9 @@
 ;
 
 (defvar kdbp-mode-hook nil)
+
+;(remove-hook 'font-lock-mode-hook 'turn-on-fast-lock)
+;(remove-hook 'font-lock-mode-hook 'turn-on-lazy-lock)
 
 (defface kdbp-mode-continuation-whitespace-face '((t (:background "azure2")))
   "*Face for highlighting continuation whitespace."
@@ -42,6 +45,7 @@
     (modify-syntax-entry ?\" "_" kdbp-mode-syntax-table)
     (modify-syntax-entry ?_ "w" kdbp-mode-syntax-table)
     (modify-syntax-entry ?$ "." kdbp-mode-syntax-table)
+    (modify-syntax-entry ?\\ "." kdbp-mode-syntax-table)
 
     kdbp-mode-syntax-table)
   "Syntax table for kdbp-mode")
@@ -96,7 +100,7 @@
 		 "\\)"
 		 "\\|"
 		 "\\("
-		 "^\\\\[ \t]*\n\\(.\\|\n\\)*"
+		 "^\\\\\\\\[ \t]*\n\\(.\\|\n\\)*"
 		 "\\)" )
 	 'font-lock-comment-face)
    '("[ \t]//.*" . font-lock-warning-face)
@@ -110,7 +114,7 @@
    (cons (kdbp-builtin-regex-gen) 'font-lock-builtin-face)
 
    ; symbol constants
-   '("`[:a-zA-Z0-9_][:a-zA-Z0-9_]*" . font-lock-constant-face)
+   '("`[:a-zA-Z0-9_.][:a-zA-Z0-9_.]*" . font-lock-constant-face)
 
    ; dates and times
    '("[0-9][0-9][0-9][0-9]\\.[01][0-9]\\.[0123][0-9]" . font-lock-constant-face)
