@@ -13,7 +13,7 @@
 ; If you have any fixes/enhancements, please send
 ;  them to the maintainer: Alvin Shih.
 ;
-; Version 0.04.  2007-03-09
+; Version 0.05.  2007-04-24
 ;
 ; Just add something resembling the following to your .emacs:
 ;   (setq load-path (cons "PATH/TO/site-lisp" load-path))
@@ -82,6 +82,9 @@
 	  "\\>"	)
 )
 
+(defconst kdbp-date-pattern "[0-9][0-9][0-9][0-9]\\.[01][0-9]\\.[0123][0-9]")
+(defconst kdbp-time-pattern "[012][0-9]:[012345][0-9]\\(:[012345][0-9]\\(\\.[0-9]\\{0,3\\}\\)?\\)?")
+
 ;font-lock-comment-face +
 ;font-lock-string-face +
 ;font-lock-keyword-face
@@ -96,7 +99,7 @@
   (list
    ; block comments or trailing comments
    (cons (concat "\\("
-		 "^/[ \t]*\n\\(\\([^\\\\].*\\)?\n\\)*\\\\[ \t]*$"
+		 "^/[ \t]*\n\\(\\([^\\\\].*\\)?\n\\)*"
 		 "\\)"
 		 "\\|"
 		 "\\("
@@ -111,15 +114,16 @@
    ; also need to match \\ to avoid problems with strings like "\\\\"
    '("\"\\(\\\\[\"\\\\]\\|[^\"]\\)*\"" . font-lock-string-face)
 
-   (cons (kdbp-builtin-regex-gen) 'font-lock-builtin-face)
-
    ; symbol constants
    '("`[:a-zA-Z0-9_.][:a-zA-Z0-9_.]*" . font-lock-constant-face)
 
+   (cons (kdbp-builtin-regex-gen) 'font-lock-builtin-face)
+
    ; dates and times
-   '("[0-9][0-9][0-9][0-9]\\.[01][0-9]\\.[0123][0-9]" . font-lock-constant-face)
+   (cons (concat kdbp-date-pattern "T" kdbp-time-pattern) 'font-lock-constant-face)
+   (cons kdbp-date-pattern 'font-lock-constant-face)
    '("[0-9][0-9][0-9][0-9]\\.[01][0-9]m" . font-lock-constant-face)
-   '("[012][0-9]:[012345][0-9]\\(:[012345][0-9]\\(\\.[0-9]\\{0,3\\}\\)?\\)?" . font-lock-constant-face)
+   (cons kdbp-time-pattern 'font-lock-constant-face)
 
 
    ; variable names
@@ -137,15 +141,15 @@
    '("[01]+b" . font-lock-constant-face)
 
 
-   ; floats and reals
+   ; floats and reals with a decimal point
    '("-?[0-9]+\\.[0-9]*\\([eE]-?[0-9][0-9]*\\)?[ef]?" . font-lock-constant-face)
    '("-?[0-9]*\\.[0-9]+\\([eE]-?[0-9][0-9]*\\)?[ef]?" . font-lock-constant-face)
 
    ; bytes
    '("0x[0-9a-fA-F]+" . font-lock-constant-face)
 
-   ; ints, shorts, longs
-   '("-?[0-9]+[hj]?" . font-lock-constant-face)
+   ; ints, shorts, longs, and reals/floats without decimal points
+   '("-?[0-9]+[hjef]?" . font-lock-constant-face)
 
    ; distinguish similar-looking characters
 
